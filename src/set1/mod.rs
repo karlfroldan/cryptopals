@@ -73,8 +73,17 @@ pub fn challenge4(args: &mut Args) {
 }
 
 pub fn challenge5(args: &mut Args) {
-    if let Some(s) = args.next() {
+    if let (Some(key), Some(fname)) = (args.next(), args.next()) {
+        let key_bytes = key.as_bytes().iter();
+        let contents = fs::read(fname).unwrap();
+        let bytes = contents.as_slice().iter();
         
+        let xored: Vec<_> = bytes.zip(key_bytes.cycle())
+            .map(|(b, k)| b^k)
+            .collect();
+        let hex = Hex::encode(&xored);
+        
+        println!("{hex}");
 
     } else {
         panic!("Please enter an input");

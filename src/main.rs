@@ -21,6 +21,7 @@ fn main() -> std::io::Result<()> {
             2 => set1::challenge2(&mut args),
             3 => set1::challenge3(&mut args),
             4 => set1::challenge4(&mut args),
+            5 => set1::challenge5(&mut args),
             _ => println!("Not a valid program!"),
         }
 
