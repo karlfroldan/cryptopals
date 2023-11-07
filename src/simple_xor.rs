@@ -21,3 +21,8 @@ pub fn best_key(array: &[u8]) -> (u8, usize) {
         .max_by(|(_, a), (_, b)| a.cmp(b))
         .unwrap()
 }
+
+#[inline]
+pub fn multi_byte_xor(array: &[u8], key: &[u8]) -> Vec<u8> {
+    array.iter().zip(key.iter().cycle()).map(|(b, k)| b^k).collect()
+}
