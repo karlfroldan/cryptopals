@@ -4,6 +4,7 @@
 mod encoding;
 mod simple_xor;
 mod set1;
+mod cryptanalysis;
 
 use std::time::Instant;
 
@@ -22,6 +23,7 @@ fn main() -> std::io::Result<()> {
             3 => set1::challenge3(&mut args),
             4 => set1::challenge4(&mut args),
             5 => set1::challenge5(&mut args),
+            6 => set1::challenge6(&mut args),
             _ => println!("Not a valid program!"),
         }
 

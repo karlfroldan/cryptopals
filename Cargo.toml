@@ -6,6 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-base64 = "0.21.5"
+base64ct = { version = "1.6.0", features = ["alloc", "std"] }
+itertools = "0.11.0"
 openssl = "0.10.58"
+phf = { version = "0.11.2", features = ["macros", "phf_macros"] }
 rand = "0.8.5"
