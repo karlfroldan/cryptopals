@@ -1,23 +1,45 @@
-use itertools::Itertools;
+use super::singlebyte_crypt;
+use crate::common::Encrypted;
 
-pub fn hamming_distance(a: &[u8], b: &[u8]) -> u32 {
+pub fn hamming_distance<T: Encrypted>(a: T, b: T) -> u32 {
+    let a = a.as_encrypted_slice();
+    let b = b.as_encrypted_slice();
+    
     a.iter()
         .zip(b.iter())
         .map(|(x, y)| (x^y).count_ones())
         .sum()
 }
 
-pub fn chunks_edit_distance(keysize: u32, _num_chunks: usize, a: &[u8]) -> f64 {
-    let keysize_big = keysize as usize;
-    let (chunk1, rest) = a.split_at(keysize_big);
-    let (chunk2, rest) = rest.split_at(keysize_big);
-    let (chunk3, rest) = rest.split_at(keysize_big);
-    let (chunk4, _) = rest.split_at(keysize_big);
+pub fn chunks_edit_distance<T: Encrypted>(chunksize: usize,
+                                          num_chunks: usize,
+                                          a: T) -> f64 {
+    let mut rest = a.as_encrypted_slice();
+    let f_keysize = chunksize as f64;
 
-    let f_keysize = f64::from(keysize);
+    (0..num_chunks)
+        .map(|n| {
+            let (chunk_group, rest1) = rest.split_at(chunksize * 2);
+            let (chunk1, chunk2) = chunk_group.split_at(chunksize);
 
-    let hamming1 = f64::from(hamming_distance(chunk1, chunk2));
-    let hamming2 = f64::from(hamming_distance(chunk3, chunk4));
+            rest = rest1;
+            
+            hamming_distance(chunk1, chunk2) as f64 / f_keysize
+        })
+        .sum::<f64>() as f64 / num_chunks as f64
+}
 
-    (hamming1 + hamming2) / f_keysize
+pub fn find_key<T: Encrypted>(keysize: usize, slice: T) -> Vec<u8> {
+    let slice = slice.as_encrypted_slice();
+    (0..keysize)
+        .map(|i| {
+            let slice = slice.clone();
+            let transposed: Vec<_> = slice.iter()
+                .skip(i) // start iterating from the i-th character.
+                .step_by(keysize)
+                .map(|x| x.clone()) // Ensure Vec<u8>, not Vec<&u8>
+                .collect();
+
+            singlebyte_crypt::best_key(transposed.as_slice()).0
+        }).collect()
 }

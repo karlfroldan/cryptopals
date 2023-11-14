@@ -5,6 +5,7 @@ mod encoding;
 mod simple_xor;
 mod set1;
 mod cryptanalysis;
+mod common;
 
 use std::time::Instant;
 
