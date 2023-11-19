@@ -3,10 +3,12 @@
 #![feature(array_chunks)]
 mod encoding;
 mod simple_xor;
-mod set1;
 mod cryptanalysis;
 mod common;
 mod cipher;
+
+mod set1;
+mod set2;
 
 use std::time::Instant;
 
@@ -20,6 +22,7 @@ fn main() -> std::io::Result<()> {
         let now = Instant::now();
 
         match progn {
+            // Set 1 Begin
             1 => set1::challenge1(&mut args),
             2 => set1::challenge2(&mut args),
             3 => set1::challenge3(&mut args),
@@ -28,6 +31,9 @@ fn main() -> std::io::Result<()> {
             6 => set1::challenge6(&mut args),
             7 => set1::challenge7(&mut args),
             8 => set1::challenge8(&mut args),
+            
+            // Set 2 Begin
+            9 => set2::challenge9(&mut args),
             _ => println!("Not a valid program!"),
         }
 

@@ -58,3 +58,12 @@ impl BlockCipher for Aes {
         Some(plaintext)
     }
 }
+
+pub fn pkcs7<T: Encrypted>(ciphertext: T, block_size: usize) -> Vec<u8> {
+    let ciphertext = ciphertext.as_encrypted_slice();
+    let pad_len = block_size - (ciphertext.len() % block_size);
+    let byte = pad_len as u8;
+
+    // Pad the ciphertext with hex 0x7
+    [ciphertext, vec![byte; pad_len].as_slice()].concat().to_vec()
+}
