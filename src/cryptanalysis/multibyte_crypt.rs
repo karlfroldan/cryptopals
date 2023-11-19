@@ -18,7 +18,7 @@ pub fn chunks_edit_distance<T: Encrypted>(chunksize: usize,
     let f_keysize = chunksize as f64;
 
     (0..num_chunks)
-        .map(|n| {
+        .map(|_| {
             let (chunk_group, rest1) = rest.split_at(chunksize * 2);
             let (chunk1, chunk2) = chunk_group.split_at(chunksize);
 
@@ -33,7 +33,7 @@ pub fn find_key<T: Encrypted>(keysize: usize, slice: T) -> Vec<u8> {
     let slice = slice.as_encrypted_slice();
     (0..keysize)
         .map(|i| {
-            let slice = slice.clone();
+            // let slice = slice;
             let transposed: Vec<_> = slice.iter()
                 .skip(i) // start iterating from the i-th character.
                 .step_by(keysize)

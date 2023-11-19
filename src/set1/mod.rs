@@ -1,14 +1,13 @@
-use crate::simple_xor;
-use crate::encoding::{Encoding, Decoding, EncodingType, base64::Base64, hex::Hex};
+use crate::{simple_xor, cryptanalysis};
+use crate::encoding::{Encoding, Decoding};
 use crate::cryptanalysis::multibyte_crypt::{chunks_edit_distance, self};
 use crate::cryptanalysis::singlebyte_crypt;
+use crate::cipher::{traits::BlockCipher, block::Aes};
 
 use itertools::Itertools;
 
 use std::env::Args;
 use std::fs;
-
-const FREQUENCY_FILE: &'static str = "input/data/bill_gates_wikipedia";
 
 pub fn challenge1(args: &mut Args) {
 
@@ -107,7 +106,7 @@ pub fn challenge6(args: &mut Args) {
             .sorted_by(|(_,d1), (_,d2)| d1.partial_cmp(d2).unwrap())
             .take(5); // Take the best 5 key sizes.
 
-        let (score, key) = distances
+        let (_, key) = distances
             .map(|(keysize, _dist)| {
                 let key = multibyte_crypt::find_key(keysize, input_contents.as_slice());
                 let encrypted = input_contents.clone();
@@ -127,5 +126,42 @@ pub fn challenge6(args: &mut Args) {
         println!("{decrypted}");
     } else {
         panic!("Please enter a filename");
+    }
+}
+
+pub fn challenge7(args: &mut Args) {
+    if let (Some(key), Some(fname)) = (args.next(), args.next()) {
+        println!("key = {key}");
+        println!("filename = {fname}");
+        let encrypted = fs::read_to_string(fname).unwrap();
+        let encrypted = encrypted.split("\n")
+            .collect::<Vec<_>>()
+            .concat()
+            .decode_b64()
+            .unwrap();
+        
+        let cipher = Aes::new();
+        let decrypted = cipher.decrypt(key.as_bytes(), encrypted).unwrap();
+        let decrypted = String::from_utf8(decrypted).unwrap();
+        println!("{decrypted}");
+    } else {
+        panic!("Make sure to enter a key and a filename!!!");
+    }
+}
+
+pub fn challenge8(args: &mut Args) {
+    if let Some(fname) = args.next() {
+        let file_contents = fs::read_to_string(fname).unwrap();
+        let lines: Vec<_> = file_contents.split("\n")
+            .map(|xs| xs.decode_b64().unwrap())
+            .collect();
+
+        let (line_num, score) = cryptanalysis::aes::find_ecb_mode(&lines);
+
+        println!("Line {line_num} is encrypted with AES.");
+        println!("There are {score} unique blocks");
+        
+    } else {
+        panic!("Make sure to enter a key and a filename!!!");
     }
 }

@@ -6,6 +6,7 @@ mod simple_xor;
 mod set1;
 mod cryptanalysis;
 mod common;
+mod cipher;
 
 use std::time::Instant;
 
@@ -25,6 +26,8 @@ fn main() -> std::io::Result<()> {
             4 => set1::challenge4(&mut args),
             5 => set1::challenge5(&mut args),
             6 => set1::challenge6(&mut args),
+            7 => set1::challenge7(&mut args),
+            8 => set1::challenge8(&mut args),
             _ => println!("Not a valid program!"),
         }
 
